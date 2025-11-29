@@ -23,3 +23,12 @@
 hs_err_pid*
 
 .idea
+
+
+# Игнорировать всю папку target
+target/
+
+# Но разрешить конкретные файлы отчётов
+!target/jacoco.xml
+!target/jacoco.csv
+!target/index.html
