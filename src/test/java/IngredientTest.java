@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import praktikum.Ingredient;
 import praktikum.IngredientType;
@@ -12,14 +14,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class IngredientTest {
 
     Ingredient ingredientTest;
-    // Мокаю для изоляции тестов от объекта IngredientType. Если вдруг измениться ENUM, то не придется исправлять тесты
-    @Mock
-    IngredientType ingredientTypeMock;
 
     @Test
     public void ingredientGetPriceTest() {
         float expectedResult = 50f;
-        ingredientTest = new Ingredient(ingredientTypeMock, "Tomato", expectedResult);
+        ingredientTest = new Ingredient(IngredientType.SAUCE, "Tomato", expectedResult);
         float actualResult = ingredientTest.getPrice();
         // Проверям что возвращается значение переданное в конструкторе
         assertEquals(expectedResult, actualResult, "Возвращаемое значение price должно совпадать с переданным");
@@ -28,18 +27,26 @@ public class IngredientTest {
     @Test
     public void ingredientGetNameTest() {
         String expectedResult = "Tomato";
-        ingredientTest = new Ingredient(ingredientTypeMock, expectedResult, 50f);
+        ingredientTest = new Ingredient(IngredientType.FILLING, expectedResult, 50f);
         String actualResult = ingredientTest.getName();
         // Проверям что возвращается значение переданное в конструкторе
         assertEquals(expectedResult, actualResult, "Возвращаемое значение name должно совпадать с переданным");
     }
 
-    @Test
-    public void ingredientGetTypeTest() {
-        ingredientTest = new Ingredient(ingredientTypeMock, "Tomato", 50f);
+    @ParameterizedTest
+    // Передаем все значения из ENUM
+    @EnumSource(IngredientType.class)
+    public void ingredientGetTypeTest(IngredientType type) {
+        ingredientTest = new Ingredient(type, "Tomato", 50f);
         IngredientType actualType = ingredientTest.getType();
+        // Фактическое имя типа ингредиента
+        String actualTypeName = actualType.name();
+        // Ожидаемое имя ингредиента
+        String expectedTypeName = type.name();
         // Проверяем что метод getType() вернет объект того же типа что был передан в конструкторе
-        assertSame(ingredientTypeMock, actualType, "Возвращаемый объект методом getType() " +
+        assertSame(type, actualType, "Возвращаемый объект методом getType() " +
                 "должен совпадать с переданным в конструкторе");
+        // Проверяем что возвращается правильное имя ингредиента
+        assertEquals(expectedTypeName,actualTypeName,"Неверное имя для типа " + type);
     }
 }
