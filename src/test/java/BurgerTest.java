@@ -19,11 +19,9 @@ public class BurgerTest {
 
     Burger burgerTest;
     @Mock
-    Ingredient ingredientMock;
-    @Mock
-    Bun bunMock;
-    @Mock
     Database databaseMock;
+    /* Т.к. классы Ingredient и Bun имеют конструктор с параметрами, то мы должны создать объекты классов явно
+    Они нам нужны для проверки количества вызовов в методе getReceipt()*/
     @Spy
     Ingredient ingredientSpy = new Ingredient(IngredientType.FILLING, "sausage", 300);
     @Spy
@@ -37,14 +35,14 @@ public class BurgerTest {
 
     @Test
     public void setBunTest() {
-        burgerTest.setBuns(bunMock);
+        burgerTest.setBuns(bunSpy);
         // Проверяем что поле bun не пустое
         assertNotNull(burgerTest.bun, "Поле bun класса burger пустое");
     }
 
     @Test
     public void addIngredientTest() {
-        burgerTest.ingredients.add(ingredientMock);
+        burgerTest.ingredients.add(ingredientSpy);
         int actualResult = burgerTest.ingredients.size();
         // Проверяем что метод addIngredient добавляет объект класса Ingredient в список
         assertEquals(1, actualResult, "Метод addIngredient должен увеличить размер списка ingredients на 1");
@@ -118,6 +116,7 @@ public class BurgerTest {
         String actualReceipt = burgerTest.getReceipt();
         // Проверяем сколько раз был вызван getName у объектов Bun и Ingredients
         Mockito.verify(bunSpy, Mockito.times(2)).getName();
+        // Используем ingredientsListTest.size(),т.к. список может быть большим
         Mockito.verify(ingredientSpy, Mockito.times(ingredientsListTest.size())).getName();
 
     }
